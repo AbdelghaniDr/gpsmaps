@@ -808,8 +808,7 @@ openerp.gpsmaps = function(instance, local)
             }
             
             if(!(address==undefined || address==false || address=="false"))
-                if(item["address"]!=address)
-                    tablero= tablero + " :: " + address;
+                tablero= tablero + " :: " + address;
 
             
             $("#tablero").html(tablero);

@@ -17,11 +17,7 @@ class snippet_positions_controller(http.Controller):
         vals={}
         vals['address'] =data['address']        
         
-        
-        positions_rec = positions_obj.search([('id', '=', data['id'])])
-        positions_rec.write(vals)        
-        
-        #positions_obj.write(data['id'], vals)
+        positions_obj.write(data['id'], vals)
 
 
 class positions(models.Model):
