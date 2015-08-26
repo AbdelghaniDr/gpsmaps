@@ -47,50 +47,49 @@ openerp.gpsmaps = function(instance, local)
             map			                =ObjetoOdoo.CreateMap(13, "ROADMAP", coordinates, "map");	
             ObjetoOdoo.geofence(map);
             
+
             setTimeout(function()
             {   
-                ObjetoOdoo.positions(map);
-                ObjetoOdoo.del_locations(openerp.gpsmaps_var.posicion);
-                for(ivehiculo in openerp.gpsmaps_var.posicion)
-                {                                    
-                    var vehiculo        =openerp.gpsmaps_var.posicion[ivehiculo];  
-                    var data_vehiculo   =openerp.gpsmaps_var.vehiculos[ivehiculo];
-                    
-                    if(data_vehiculo != undefined) 
-                    {
-                        if(data_vehiculo["image_gps"] != undefined)  vehiculo["image_gps"]   =data_vehiculo["image_gps"];                        
-                        
-                        location                =ObjetoOdoo.locationsMap(map, {latitude:vehiculo["latitude"],longitude:vehiculo["longitude"]}, "aaaa", vehiculo);                                                        
-                        if(openerp.gpsmaps_var.locations[ivehiculo]==undefined)     openerp.gpsmaps_var.locations[ivehiculo]=Array(location);
-                        else                                                        openerp.gpsmaps_var.locations[ivehiculo].push(location);                                            
-                    }    
-                }
-            },5000);             
+                objeto.process(ObjetoOdoo, map);
+            },100);                         
+            setTimeout(function()
+            {   
+                objeto.process(ObjetoOdoo, map);
+            },500);                         
+            
             timer_position=setInterval(function()
             {     
-                ObjetoOdoo.del_locations(openerp.gpsmaps_var.posicion);
-                ObjetoOdoo.positions(map);
-                for(ivehiculo in openerp.gpsmaps_var.posicion)
-                {                                     
-                    var vehiculo        =openerp.gpsmaps_var.posicion[ivehiculo];
-                    var data_vehiculo   =openerp.gpsmaps_var.vehiculos[ivehiculo];
-                    
-                    if(data_vehiculo != undefined) 
-                    {
-                        if(data_vehiculo["image_gps"] != undefined)  vehiculo["image_gps"]   =data_vehiculo["image_gps"];    
-                        
-                        location        =ObjetoOdoo.locationsMap(map, {latitude:vehiculo["latitude"],longitude:vehiculo["longitude"]}, "aaaa", vehiculo);                    
-                        if(openerp.gpsmaps_var.locations[ivehiculo]==undefined)     openerp.gpsmaps_var.locations[ivehiculo]=Array(location);
-                        else                                                        openerp.gpsmaps_var.locations[ivehiculo].push(location);                                            
-                    }    
-                }
+                objeto.process(ObjetoOdoo, map);
             },10000);
             
             if(openerp.gpsmaps_var.refposiciones.length>1)  openerp.gpsmaps_var.refposiciones.push(timer_position);
             else                                            openerp.gpsmaps_var.refposiciones[1]=timer_position;
                         
             ObjetoOdoo.menu_vehicle();
-        }
+        },
+        process: function(ObjetoOdoo, map) 
+        {   
+		    var locations=Array();
+		    var timer_position;
+		    var location;
+
+            ObjetoOdoo.del_locations(openerp.gpsmaps_var.posicion);
+            ObjetoOdoo.positions(map);
+            for(ivehiculo in openerp.gpsmaps_var.posicion)
+            {                                     
+                var vehiculo        =openerp.gpsmaps_var.posicion[ivehiculo];
+                var data_vehiculo   =openerp.gpsmaps_var.vehiculos[ivehiculo];
+                
+                if(data_vehiculo != undefined) 
+                {
+                    if(data_vehiculo["image_gps"] != undefined)  vehiculo["image_gps"]   =data_vehiculo["image_gps"];    
+                    
+                    location        =ObjetoOdoo.locationsMap(map, {latitude:vehiculo["latitude"],longitude:vehiculo["longitude"]}, "aaaa", vehiculo);                    
+                    if(openerp.gpsmaps_var.locations[ivehiculo]==undefined)     openerp.gpsmaps_var.locations[ivehiculo]=Array(location);
+                    else                                                        openerp.gpsmaps_var.locations[ivehiculo].push(location);                                            
+                }    
+            }
+        }        
     });
     instance.web.client_actions.add('gpsmaps.homepage', 'instance.gpsmaps.HomePage');
 
@@ -635,6 +634,8 @@ openerp.gpsmaps = function(instance, local)
 		                script_js       =script_js+"        var vehiculo                    =openerp.gpsmaps_var.posicion[id_vehicle];";
 		                //script_js       =script_js+"        var google                      =openerp.gpsmaps_var.vgoogle;";
 		                script_js       =script_js+"        var position 		            = new google.maps.LatLng(vehiculo[\"latitude\"],vehiculo[\"longitude\"]);	";
+		                
+		                
 		                script_js       =script_js+"        var map                         =openerp.gpsmaps_var.map;";
 		                script_js       =script_js+"        map.panTo(position);";
 		                script_js       =script_js+"";
@@ -689,7 +690,7 @@ openerp.gpsmaps = function(instance, local)
                     if (results[1]) 
                     {
                         map=openerp.gpsmaps_var.map;
-                        openerp.gpsmaps_var.vreturn=results[1].formatted_address;
+                        openerp.gpsmaps_var.vreturn=results[0].formatted_address;
                     } 
                     else 
                     {
@@ -776,45 +777,44 @@ openerp.gpsmaps = function(instance, local)
             
             $("#millas").html(item["milage"]);
             
-            var tablero="Datos ";
+            var tablero="";
             if(!(item["times"]==undefined || item["times"]==false || item["times"]=="false"))
-                tablero= tablero + " :: " + item["times"];
-            if(!(item["address"]==undefined || item["address"]==false || item["address"]=="false"))    
-                tablero= tablero + " :: " + item["address"];
+                tablero= tablero + item["times"];
             if(!(item["event_id"]==undefined || item["event_id"]==false || item["event_id"]=="false"))        
                 tablero= tablero + " :: " + item["event_id"];
             if(!(item["geofence_id"]==undefined || item["geofence_id"]==false || item["geofence_id"]=="false"))        
                 tablero= tablero + " :: " + item["geofence_id"];
 
-            if(!(item["address"]==undefined || item["address"]==false || item["address"]=="false"))
-            {
-                var address =this.codeLatLng(item["latitude"]+','+item["longitude"]);
-            }                        
+            
             if(!(item["latitude"]==undefined || item["latitude"]==false || item["latitude"]=="false"))
             {
-                var address =this.codeLatLng(item["latitude"]+','+item["longitude"]);
-                item["address"]=address;
-                
-                openerp.jsonRpc('/snippet_positions/render', 'call', {
-                    'data': item
-                }).then(function(category) {
-                    // just print the categories
-                    //$(category).appendTo(self.$target);
-                })
-                .fail(function(e) {
-                    // debug in js console
-                    return;
-                });                
+                if((item["address"]==undefined || item["address"]==false || item["address"]=="false"))    
+                {                
+                    var scoordinates=item["latitude"]+','+item["longitude"];
+                    var address     =this.codeLatLng(scoordinates);
+                    
+                    item["address"] ="("+scoordinates +") " +address;
+                    
+                    openerp.jsonRpc('/snippet_positions/render', 'call', {
+                        'data': item
+                    }).then(function(category) {
+                        // just print the categories
+                        //$(category).appendTo(self.$target);
+                    })
+                    .fail(function(e) {            
+                        return;
+                    });                
+                }    
             }
             
-            if(!(address==undefined || address==false || address=="false"))
-                if(item["address"]!=address)
-                    tablero= tablero + " :: " + address;
+            if(!(item["address"]==undefined || item["address"]=="undefined" || item["address"]==false || item["address"]=="false"))
+            {
+                var vaddress             =String(item["address"]);
+                var address              =vaddress.split(":");						    
+		        if(address[0]!="Geocoder")   tablero     =tablero + "<br>" + item["address"];
+            }                        
 
-            
             $("#tablero").html(tablero);
-            
-            //alert(item["event_id"]);
                         
             var posicion=this.LatLng({latitude:item["latitude"],longitude:item["longitude"]})            
             map.panTo(posicion);
@@ -994,7 +994,7 @@ openerp.gpsmaps = function(instance, local)
                         {      
                             _(results).each(function (vehicle)
                             {        
-                                if(!(vehicle["position_id"]=="false" || vehicle["position_id"]==false))
+                                if(!(vehicle["position_id"]=="false" || vehicle["position_id"]==false|| vehicle["position_id"]==undefined))
                                 {
                                     var vposition                               =String(vehicle["position_id"]);
 
@@ -1010,8 +1010,8 @@ openerp.gpsmaps = function(instance, local)
                                     {
                                         _(positions).each(function (position) 
                                         {
-	                                        var vehicle_id                            =vehicle['id'];
-	                                        openerp.gpsmaps_var.posicion[vehicle_id]  =position;
+                                            var vehicle_id                            =vehicle['id'];
+                                            openerp.gpsmaps_var.posicion[vehicle_id]  =position;                                                    
                                         });                                  
                                     }); 
                                 }
@@ -1050,8 +1050,6 @@ openerp.gpsmaps = function(instance, local)
         }        
     });           
 }
-
-
 function metodo_history()
 {    
     var map             =openerp.gpsmaps_var.map;
@@ -1133,8 +1131,5 @@ function metodo_geofence(tipo)
     {
         var geofence         = new openerp.gpsmaps.geofence();
         geofence.start();
-
-
-        
     }
 }

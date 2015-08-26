@@ -28,19 +28,18 @@
                         <group >
                             <field name="device_id"/>
                             <field name="address" />
-                            <field name="times"/>
+                            
                             <field name="geofence_id"/>
                         </group>
                         <group >
                             <field name="speed"/>
-                            <field name="event"/>
                             <field name="event_id"/>
                             <field name="milage"/>
                         </group>
                         <group >
-                            <field name="course"/>
-                            <field name="other"/>
-                            <field name="power"/>                            
+                            <field name="times"/>    
+                            <field name="power"/>
+                            <field name="other"/>       
                         </group>
                     </group>
                     <div id="map2" style="width:100%; height:400px;"> MAPA</div>
@@ -82,7 +81,6 @@
             <field name="arch" type="xml">
                 <tree string="Reporte de posiciones" colors="blue:event in ('Desaceleracion','Exceso de Velocidad');black:event == 'Reporte de Tiempo';">
                     <field name="address"/>
-
                     <field name="geofence_id"/>
 
                     <field name="altitude"/>
@@ -235,6 +233,8 @@
                     <field name="phone"/>
                     <field name="position_id"/>
                     <field name="geofence_id"/>
+                    <field name="history"/>
+                    
                     
                 </field>
             </field>
@@ -266,27 +266,30 @@
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <form string="Reporte de posiciones">
-                    <group col="1">
+                    <group col="3">
                         <group >
                             <field name="name"/>
-                            <field name="company_id"/>
-                            <field name="points" class="points"/>
-                            <field name="in_geofence_mail"/>
-                            <field name="out_geofence_mail"/>
-                            <input id="address" name="address"/>
-
-                                <font id="search">SEARCH</font>
-
+                            <field name="in_geofence_mail"/>                            
                         </group>
+                        <group >
+                            <field name="company_id"/>
+                            <field name="out_geofence_mail"/>                            
+                        </group>
+                        <group >
+                            <input id="address" name="address" class="formulario"/><br/>
+                            <font id="search" class="oe_button oe_form_button oe_highlight" type="button">SEARCH</font>        
+                            
+                        </group>                                                
                     </group>
+                    <group>
+                        <field name="points" class="points"/>
+                    </group>                                                
+                    
                     <div id="map3" style="width:100%; height:400px;"> MAPA</div>
                     <script>
                         setTimeout(function(instance)
                         {                 
                             metodo_geofence("inicio");
-
-
-/*
 
                             $("a.oe_i").click(function(){
                                 metodo_geofence();
@@ -298,8 +301,6 @@
                                     metodo_geofence("inicio");           
                                 },1000);
                             });
-*/                            
-                            
                         },100);                        
                         
                     </script>
